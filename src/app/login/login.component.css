@@ -1,0 +1,10 @@
+.background {
+    background-image: url("../../assets/background.jpeg");
+    background-repeat:no-repeat;
+   background-size:cover;
+   font-size: larger;
+}
+
+input {
+    border-radius: 5px;
+}
