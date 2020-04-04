@@ -1,0 +1,14 @@
+<h2>Mejor Profesor 2020</h2>
+<div class="row">
+  <div *ngFor="let candidato of candidatos" class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title"><b class="num">{{ candidato.getNumero() }}</b>{{ candidato.getNombre() }}</h5>
+        <p class="card-text"><b>Antecedentes:</b> {{ candidato.getAntecedentes() }}</p>
+        <p class="card-text"><b>Propuestas:</b> {{ candidato.getPropuestas() }}</p>
+        <a class="btn btn-primary" type="submit" (click)="vote(candidato)">Votar</a>
+      </div>
+    </div>
+    <br>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+h2 {
+    text-align: center;
+    font-size: 50px;
+}
+
+.row {
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.btn {
+    color: white;
+}
+
+.num {
+    padding: 2px;
+    border-style: inset;
+    margin-right: 10px;
+}
