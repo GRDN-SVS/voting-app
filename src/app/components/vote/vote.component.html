@@ -1,0 +1,33 @@
+<div class="background">
+  <br>
+  <h2>Mejor Profesor 2020</h2>
+  <div class="row">
+    <div *ngFor="let candidato of candidatos" class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h5><b class="num">{{ candidato.getNumero() }}</b>{{ candidato.getNombre() }}</h5>
+          <p class="card-text"><b>Antecedentes:</b> {{ candidato.getAntecedentes() }}</p>
+          <p class="card-text"><b>Propuestas:</b> {{ candidato.getPropuestas() }}</p>
+          <a class="btn secondary" type="submit" (click)="vote(candidato, content)">Votar</a>
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+</div>
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">{{ modalTitle }}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click'); router.navigate(['login'])">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>{{ modelContent }}</p>
+  </div>
+  <div class="modal-footer">
+    <button *ngIf="success" type="button" class="btn btn-success" (click)="c('Save click'); router.navigate(['login'])">Aceptar</button>
+    <button *ngIf="!success" type="button" class="btn btn-danger" (click)="c('Save click')">Aceptar</button>
+  </div>
+</ng-template>
