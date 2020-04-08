@@ -5,3 +5,31 @@ html, body {
     height: 100%;
     margin: 0;
 }
+
+:root {
+    --primary: #4FFFCA;
+    --secondary: #2BA4CC;
+    --third: #6D8E99;
+    --aux: #FF978F;
+    --alert: #CC2B55;
+}
+
+.primary, .success {
+    background-color: var(--primary);
+}
+
+.secondary {
+    background-color: var(--secondary);
+}
+
+.third {
+    background-color: var(--third);
+}
+
+.aux {
+    background-color: var(--aux);
+}
+
+.alert {
+    background-color: var(--alert);
+}

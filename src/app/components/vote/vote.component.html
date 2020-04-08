@@ -4,11 +4,11 @@
   <div class="row">
     <div *ngFor="let candidato of candidatos" class="col-sm-4">
       <div class="card">
-        <h5 class="card-header"><b class="num">{{ candidato.getNumero() }}</b>{{ candidato.getNombre() }}</h5>
         <div class="card-body">
+          <h5><b class="num">{{ candidato.getNumero() }}</b>{{ candidato.getNombre() }}</h5>
           <p class="card-text"><b>Antecedentes:</b> {{ candidato.getAntecedentes() }}</p>
           <p class="card-text"><b>Propuestas:</b> {{ candidato.getPropuestas() }}</p>
-          <a class="btn btn-primary" type="submit" (click)="vote(candidato, content)">Votar</a>
+          <a class="btn secondary" type="submit" (click)="vote(candidato, content)">Votar</a>
         </div>
       </div>
       <br>
@@ -28,6 +28,6 @@
   </div>
   <div class="modal-footer">
     <button *ngIf="success" type="button" class="btn btn-success" (click)="c('Save click'); router.navigate(['login'])">Aceptar</button>
-    <button *ngIf="!success" type="button" class="btn btn-danger" (click)="c('Save click'); router.navigate(['login'])">Aceptar</button>
+    <button *ngIf="!success" type="button" class="btn btn-danger" (click)="c('Save click')">Aceptar</button>
   </div>
 </ng-template>

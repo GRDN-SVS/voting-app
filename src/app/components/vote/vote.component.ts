@@ -33,54 +33,47 @@ export class VoteComponent implements OnInit {
     
   fecha = new Date(2020, 10, 12);
   can1 = new Candidate(1, "Daniel Correa", this.fecha, 5, "Topicos en software", "Empezó como profesor en el 2020-1", "Es genial");
-  can2 = new Candidate(2, "El innombrable", this.fecha, 100, "Integrador 2 - IA", "Es de venezuela", "Es horrible");
+  can2 = new Candidate(2, "Lalinde", this.fecha, 100, "De todo", "Es un pro", "Hacer pensar a los estudiantes");
   can3 = new Candidate(3, "Elizabeth Suescun", this.fecha, 9, "Integrador - ing. software", "Nos ama", "Ponernos 5 en el proyecto");
-  can4 = new Candidate(4, "Mauricio Toro", this.fecha, 17, "Estructuras de datos", "Es bien, pero un poco (muy) raro", "Eliminar semana santa");
+  can4 = new Candidate(4, "Mauricio Toro", this.fecha, 17, "Estructuras de datos", "Es bien, pero un poco raro", "Eliminar semana santa");
   can5 = new Candidate(5, "Mc'Cormick", this.fecha, 80, "Lenguajes - operativos- compiladores", "Es un osito", "Asustar a los vagos para que se vayan a administración");
   can6 = new Candidate(6, "Edwin Electronica", this.fecha, 66, "Electronica - Conmutación", "Tiene una hija que se llama Isabela", "Que los estudiantes le tengan miedo a Jose Luis");
 
   candidatos = [this.can1, this.can2, this.can3, this.can4, this.can5, this.can6]
 
   vote(candidate: Candidate, content) {
-    // console.log(candidate);
-    // console.log(this.id);
-    this.success = false;
-    this.modalTitle = "Titulo :D"
-    this.modelContent = "HELLOO"
-    this.modalService.open(content);
+    // this.success = true;
+    // this.modalTitle = "Titulo :D"
+    // this.modelContent = "HELLOO"
+    // this.modalService.open(content);
 
-    // const req = this.http.post(`${API_URL}/blockchain/castBallot`, JSON.stringify({
-    //   voterId: this.id,
-    //   electionId: "1234", // HACER REQUEST A queryWithQueryString
-    //   optionId: candidate.getId()
-    // }),
-    // {
-    //   headers:{
-    //     'Content-Type': 'application/json',
-    //   }
-    // })
-    // .subscribe(
-    //   res => {
-    //     if (res['error'] == undefined) {
-    //       // Voto almacenado
-    //       this.success = true;
-    //       this.modalTitle = "Votación Exitosa";
-    //       this.modelContent = "Su voto se ha registrado exitosamente!";
-    //       this.modalService.open(content);
-    //     }
-    //     else {
-    //       // Voto invalido
-    //       this.success = false;
-    //       this.modalTitle = "Ups, ocurrió un error";
-    //       this.modelContent = res['error'];
-    //       this.modalService.open(content);
-    //     }
-    //   }
-    // )
+    const req = this.http.post(`${API_URL}/blockchain/castBallot`, JSON.stringify({
+      voterId: this.id,
+      electionId: "1234", // HACER REQUEST A queryWithQueryString
+      optionId: candidate.getId()
+    }),
+    {
+      headers:{
+        'Content-Type': 'application/json',
+      }
+    })
+    .subscribe(
+      res => {
+        if (res['error'] == undefined) {
+          // Voto almacenado
+          this.success = true;
+          this.modalTitle = "Votación Exitosa";
+          this.modelContent = "Su voto se ha registrado exitosamente!";
+          this.modalService.open(content);
+        }
+        else {
+          // Voto invalido
+          this.success = false;
+          this.modalTitle = "Ups, ocurrió un error";
+          this.modelContent = res['error'];
+          this.modalService.open(content);
+        }
+      }
+    )
   }
-
-  open(content) {
-    this.modalService.open(content);
-  }
-
 }
