@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { NgbModalConfig, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { VoterService } from '../../services/voter.service';
 import { API_URL } from '../../env';
@@ -9,21 +10,35 @@ import { API_URL } from '../../env';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  providers: [NgbModalConfig, NgbModal]
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private router: Router, private http: HttpClient, private voter: VoterService) { 
+  public success: Boolean;  // BORRAR
+  public modalTitle: string;
+  public modelContent: string;
+
+  constructor(public router: Router, private http: HttpClient, private voter: VoterService, config: NgbModalConfig, private modalService: NgbModal) { 
+    config.backdrop = 'static';
+    config.keyboard = false;
   }
 
   ngOnInit(): void {
   }
 
-  login() {
+  open(content) {
+    this.modalService.open(content);
+  }
+
+  login(content) {
     this.voter.id = (document.getElementById('id') as HTMLInputElement).value;
     if (this.voter.id != '') {
-      this.router.navigate(['vote']);
-      return true;
+      this.success = true;  // BORRAR
+      this.modalTitle = "Titulo :D"
+      this.modelContent = "HELLOO"
+      this.modalService.open(content);
+
       // const req = this.http.post(`${API_URL}/blockchain/validateVoter`, JSON.stringify({
       //   voterId: this.voter.id,
       // }),
@@ -39,7 +54,9 @@ export class LoginComponent implements OnInit {
       //       return true;
       //     }
       //     else {
-      //       return false;
+      //       this.modalTitle = "Ups, Ocurrió un error";
+      //       this.modelContent = res['error'];
+      //       this.modalService.open(content);
       //     }
       //   }
       // )

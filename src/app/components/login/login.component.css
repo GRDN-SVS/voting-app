@@ -1,4 +1,9 @@
-*:not(input) {
+/* *:not(input) {
+    margin: 0;
+    padding: 0;
+} */
+
+.animation-area {
     margin: 0;
     padding: 0;
 }
@@ -100,6 +105,14 @@ input {
     border-radius: 5px;
 }
 
-form {
+a {
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 5px;
+    color: white;
+    font-size: large;
+}
+
+form, a {
     z-index: 1;
 }
