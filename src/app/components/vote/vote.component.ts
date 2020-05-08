@@ -26,8 +26,10 @@ export class VoteComponent implements OnInit {
   public modalTitle: string;
   public modelContent: string;
   public success: Boolean;
+  scrutinizer: ScrutinizerService;
 
-  constructor(public router: Router, private http: HttpClient, private voter: VoterService, config: NgbModalConfig, private modalService: NgbModal, private scrutinizer: ScrutinizerService) {
+  constructor(public router: Router, private http: HttpClient, private voter: VoterService, config: NgbModalConfig, private modalService: NgbModal) {
+    this.scrutinizer = new ScrutinizerService(this.http);
     this.scrutinizerPublicKey = this.scrutinizer.requestPublicKey();
     
     config.backdrop = 'static';
