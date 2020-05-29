@@ -41,23 +41,30 @@ export class VoteComponent implements OnInit {
   }
 
   private scrutinizerPublicKey;
-    
-  fecha = new Date(2020, 10, 12);
-  can1 = new Candidate(1, "How I met your mother", this.fecha, 5, "CBS", "Es muy charra, mejor serie de la vida", "Contarle a los hijos la historia de como conoció la esposa para preguntar si puede salir con alguien mas");
-  can2 = new Candidate(2, "Game Of Thrones", this.fecha, 100, "HBO", "Es inigualable", "Mostrar el conflicto entre poderes en un mundo medieval");
-  can3 = new Candidate(3, "MR. Robot", this.fecha, 9, "Usa network", "Es muy tecnologica y psicologica", "Hacerte creer una cosa para despues explotarte la mente");
-  can4 = new Candidate(4, "Greys Anatomy", this.fecha, 17, "ABC", "Es infinita", "Hacer que te enamores de un personaje para luego matarlo");
-  can5 = new Candidate(5, "The Crown", this.fecha, 13, "ABC Studios", "Es muy educativa", "Enseñar sobre la historia de inglaterra y empoderar a la mujer");
-  can6 = new Candidate(6, "13 Reasons Why", this.fecha, 66, "Eskmo", "Es plenamente psicologica y depresiva", "Mostrar la historia de una mujer que fue demasiado bullyniada");
 
-  candidatos = [this.can1, this.can2, this.can3, this.can4, this.can5, this.can6]
+  candidatos = this.getCandidates();
+
+  getCandidates() {
+    let candidates = [];
+    let result: any;
+    const req = this.http.get(`${API_URL}/election/getOptions`)
+    .subscribe(
+      res => {
+        if (res['error'] == undefined) {
+          result= Array(res)[0];
+          result.forEach(option => {
+            candidates.push(new Candidate(option['option_id'], option['name'], option['date_birth'], option['nombre'], option['party'], option['background'], option['proposals']))
+          });
+        }
+        else {
+          return [];
+        }
+      }
+    )
+    return candidates;
+  }
 
   vote(candidate: Candidate, content) {
-    // this.success = true;
-    // this.modalTitle = "Votación Exitosa"
-    // this.modelContent = "Su voto se ha registrado exitosamente!"
-    // this.modalService.open(content);
-
     const encrypter = new Encrypter(this.http);
 
     const req = this.http.post(`${API_URL}/blockchain/castBallot`, JSON.stringify({
@@ -82,7 +89,8 @@ export class VoteComponent implements OnInit {
           const req2 = this.http.post(`${API_URL}/submitVote`, JSON.stringify({
             nonceId: nonceId,
             encryptedVote: encryptedVote,
-            electionId: "1234"
+            electionId: "1234",
+            clientPublicKey: encrypter.publicKey
           }), 
           {
             headers:{

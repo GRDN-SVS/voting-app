@@ -25,8 +25,7 @@
 	  <p>{{ modelContent }}</p>
 	</div>
 	<div class="modal-footer">
-	  <!-- <button *ngIf="success" type="button" class="btn btn-success" (click)="c('Save click'); router.navigate(['vote'])">Aceptar</button>  -->
-	  <button *ngIf="!success" type="button" class="btn btn-danger" (click)="c('Save click'); router.navigate(['login'])">Aceptar</button>
+	  <button type="button" class="btn btn-danger" (click)="c('Save click'); router.navigate(['login'])">Aceptar</button>
 	</div>
   </ng-template>
 
