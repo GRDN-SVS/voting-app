@@ -14,7 +14,7 @@ import { VoteComponent } from './components/vote/vote.component';
   declarations: [
     AppComponent,
     LoginComponent,
-    VoteComponent
+    VoteComponent,
   ],
   imports: [
     BrowserModule,

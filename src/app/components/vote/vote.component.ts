@@ -3,10 +3,15 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModalConfig, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { VoterService } from '../../services/voter.service';
+import { VoterService } from '../../services/voter/voter.service';
 import { API_URL } from '../../env';
 
 import { Candidate } from '../../models/candidate.model';
+
+import { Encrypter } from '../../services/crypto/encrypter.sevice';
+import { ScrutinizerService } from '../../services/scrutinizer/scrutinizer.service';
+
+import { box, randomBytes} from 'tweetnacl';
 
 @Component({
   selector: 'app-vote',
@@ -22,7 +27,9 @@ export class VoteComponent implements OnInit {
   public modelContent: string;
   public success: Boolean;
 
-  constructor(public router: Router, private http: HttpClient, private voter: VoterService, config: NgbModalConfig, private modalService: NgbModal) {
+  constructor(public router: Router, private http: HttpClient, private voter: VoterService, config: NgbModalConfig, private modalService: NgbModal, private scrutinizer: ScrutinizerService) {
+    this.scrutinizerPublicKey = this.scrutinizer.requestPublicKey();
+    
     config.backdrop = 'static';
     config.keyboard = false;
   }
@@ -30,27 +37,30 @@ export class VoteComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.id = this.voter.id;
   }
+
+  private scrutinizerPublicKey;
     
   fecha = new Date(2020, 10, 12);
-  can1 = new Candidate(1, "Daniel Correa", this.fecha, 5, "Topicos en software", "Empezó como profesor en el 2020-1", "Es genial");
-  can2 = new Candidate(2, "Lalinde", this.fecha, 100, "De todo", "Es un pro", "Hacer pensar a los estudiantes");
-  can3 = new Candidate(3, "Elizabeth Suescun", this.fecha, 9, "Integrador - ing. software", "Nos ama", "Ponernos 5 en el proyecto");
-  can4 = new Candidate(4, "Mauricio Toro", this.fecha, 17, "Estructuras de datos", "Es bien, pero un poco raro", "Eliminar semana santa");
-  can5 = new Candidate(5, "Mc'Cormick", this.fecha, 80, "Lenguajes - operativos- compiladores", "Es un osito", "Asustar a los vagos para que se vayan a administración");
-  can6 = new Candidate(6, "Edwin Electronica", this.fecha, 66, "Electronica - Conmutación", "Tiene una hija que se llama Isabela", "Que los estudiantes le tengan miedo a Jose Luis");
+  can1 = new Candidate(1, "How I met your mother", this.fecha, 5, "CBS", "Es muy charra, mejor serie de la vida", "Contarle a los hijos la historia de como conoció la esposa para preguntar si puede salir con alguien mas");
+  can2 = new Candidate(2, "Game Of Thrones", this.fecha, 100, "HBO", "Es inigualable", "Mostrar el conflicto entre poderes en un mundo medieval");
+  can3 = new Candidate(3, "MR. Robot", this.fecha, 9, "Usa network", "Es muy tecnologica y psicologica", "Hacerte creer una cosa para despues explotarte la mente");
+  can4 = new Candidate(4, "Greys Anatomy", this.fecha, 17, "ABC", "Es infinita", "Hacer que te enamores de un personaje para luego matarlo");
+  can5 = new Candidate(5, "The Crown", this.fecha, 13, "ABC Studios", "Es muy educativa", "Enseñar sobre la historia de inglaterra y empoderar a la mujer");
+  can6 = new Candidate(6, "13 Reasons Why", this.fecha, 66, "Eskmo", "Es plenamente psicologica y depresiva", "Mostrar la historia de una mujer que fue demasiado bullyniada");
 
   candidatos = [this.can1, this.can2, this.can3, this.can4, this.can5, this.can6]
 
   vote(candidate: Candidate, content) {
     // this.success = true;
-    // this.modalTitle = "Titulo :D"
-    // this.modelContent = "HELLOO"
+    // this.modalTitle = "Votación Exitosa"
+    // this.modelContent = "Su voto se ha registrado exitosamente!"
     // this.modalService.open(content);
+
+    const encrypter = new Encrypter(this.http);
 
     const req = this.http.post(`${API_URL}/blockchain/castBallot`, JSON.stringify({
       voterId: this.id,
       electionId: "1234", // HACER REQUEST A queryWithQueryString
-      optionId: candidate.getId()
     }),
     {
       headers:{
@@ -60,11 +70,42 @@ export class VoteComponent implements OnInit {
     .subscribe(
       res => {
         if (res['error'] == undefined) {
-          // Voto almacenado
-          this.success = true;
-          this.modalTitle = "Votación Exitosa";
-          this.modelContent = "Su voto se ha registrado exitosamente!";
-          this.modalService.open(content);
+          // Encriptar voto
+          const idAndNonce = encrypter.getIdAndNonce();
+          const nonceId = idAndNonce['id'];
+          const nonce = idAndNonce['nonce'];
+          
+          let encryptedVote = encrypter.seal(candidate.id, nonce, this.scrutinizerPublicKey);
+
+          const req2 = this.http.post(`${API_URL}/submitVote`, JSON.stringify({
+            nonceId: nonceId,
+            encryptedVote: encryptedVote,
+            electionId: "1234"
+          }), 
+          {
+            headers:{
+              'Content-Type': 'application/json',
+            }
+          })
+          .subscribe(
+            res2 =>{
+              if (res2['error'] == undefined) {
+                // Voto almacenado
+                this.success = true;
+                this.modalTitle = "Votación Exitosa";
+                this.modelContent = "Su voto se ha registrado exitosamente!";
+                this.modalService.open(content);
+              }
+              else {
+                // No se pudo mandar el voto al jurado
+                this.success = false;
+                this.modalTitle = "Ups, ocurrió un error";
+                this.modelContent = res2['error'];
+                this.modalService.open(content);
+              }
+            }
+          );
+
         }
         else {
           // Voto invalido
