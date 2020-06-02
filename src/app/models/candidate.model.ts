@@ -2,7 +2,7 @@ import {Deserializable} from './deserializable.model';
 
 export class Candidate implements Deserializable {
     
-    public id: number;
+    public option_id: number;
     public nombre: string;
     public nacimiento: Date;
     public numero: number;
@@ -10,8 +10,8 @@ export class Candidate implements Deserializable {
     public antecedentes: string;
     public propuestas: string;
     
-    constructor(id: number, nombre: string, nacimiento: Date, numero: number, partido: string, antecedentes: string, propuestas: string) {
-        this.id = id;
+    constructor(option_id: number, nombre: string, nacimiento: Date, numero: number, partido: string, antecedentes: string, propuestas: string) {
+        this.option_id = option_id;
         this.nombre = nombre;
         this.nacimiento = nacimiento;
         this.numero = numero;
@@ -25,11 +25,11 @@ export class Candidate implements Deserializable {
     }
 
     getId() {
-        return this.id;
+        return this.option_id;
     }
 
-    setId(id: number) {
-        this.id = id;
+    setId(option_id: number) {
+        this.option_id = this.option_id;
     }
 
     getNombre() {

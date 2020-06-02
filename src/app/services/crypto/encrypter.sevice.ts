@@ -26,20 +26,20 @@ export class Encrypter {
      * @param nonce the nonce used to encrypt the content.
      * @param otherPublicKey public key from the recipient.
      */
-    seal(content, nonce, otherPublicKey) {
-        return box(content, nonce, otherPublicKey, this.privateKey);
+    seal(content, nonce: Uint8Array, otherPublicKey: Uint8Array) {
+        let arr = [];
+        arr.push(content);
+        return box(Uint8Array.from(arr), Uint8Array.from(nonce), Uint8Array.from(otherPublicKey), Uint8Array.from(this.privateKey));
     }
 
-    getIdAndNonce() {
-        const req = this.http.get(`${NET_URL}/getNonce`).subscribe(
-            res => {
-                if (res['error'] == undefined) {
-                    return res; // Return JSON with id and nonce
-                }
-                else {
-                    return res;
-                }
-            }
-        );
+    async getIdAndNonce() {
+        const res = await this.http.get(`${NET_URL}/forward`).toPromise()
+
+        if (res['error'] == undefined) {
+            return res; // Return JSON with id and nonce
+        }
+        else {
+            return res;
+        }
     }
 }

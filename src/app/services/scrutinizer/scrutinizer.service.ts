@@ -7,8 +7,9 @@ export class ScrutinizerService {
 
     }
 
-    requestPublicKey() {
-        return this.http.get(`${SCRUTINIZER_URL}/publicKey`);
+    async requestPublicKey() {
+        let res = await this.http.get(`${SCRUTINIZER_URL}/boxPublicKey`).toPromise()
+        return res['key'];        
     }
     
 }

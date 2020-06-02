@@ -31,27 +31,29 @@ export class LoginComponent implements OnInit {
   login(content) {
     this.voter.id = (document.getElementById('id') as HTMLInputElement).value;
     if (this.voter.id != '') {
-      const req = this.http.post(`${API_URL}/blockchain/validateVoter`, JSON.stringify({
-        voterId: this.voter.id,
-      }),
-      {
-        headers:{
-          'Content-Type': 'application/json',
-        }
-      })
-      .subscribe(
-        res => {
-          if (res['error'] == undefined) {
-            this.router.navigate(['vote']);
-            return true;
-          }
-          else {
-            this.modalTitle = "Ups, Ocurrió un error";
-            this.modelContent = res['error'];
-            this.modalService.open(content);
-          }
-        }
-      )
+      this.router.navigate(['vote']);
+      return true;
+      // const req = this.http.post(`${API_URL}/blockchain/validateVoter`, JSON.stringify({
+      //   voterId: this.voter.id,
+      // }),
+      // {
+      //   headers:{
+      //     'Content-Type': 'application/json',
+      //   }
+      // })
+      // .subscribe(
+      //   res => {
+      //     if (res['error'] == undefined) {
+      //       this.router.navigate(['vote']);
+      //       return true;
+      //     }
+      //     else {
+      //       this.modalTitle = "Ups, Ocurrió un error";
+      //       this.modelContent = res['error'];
+      //       this.modalService.open(content);
+      //     }
+      //   }
+      // )
     } 
   }
 }
