@@ -66,102 +66,65 @@ export class VoteComponent implements OnInit {
   async vote(candidate: Candidate, content) {
     const encrypter = new Encrypter(this.http);
 
-    // Encriptar voto
-    const idAndNonce = await encrypter.getIdAndNonce();
-    const nonceId = idAndNonce['id'];
-    const nonce: Uint8Array = idAndNonce['nonce'] as Uint8Array;
-    const scrutinizerPublicKey: Uint8Array = await this.scrutinizer.requestPublicKey() as Uint8Array;
-    
-    let encryptedVote = encrypter.seal(candidate.option_id, nonce, scrutinizerPublicKey);
-
-    const req2 = this.http.post(`${API_URL}/vote/submitVote`, JSON.stringify({
-      nonceId: nonceId,
-      encryptedVote: Array.from(encryptedVote),
-      electionId: 1234,
-      clientPublicKey: Array.from(encrypter.publicKey)
-    }), 
+    const req = this.http.post(`${API_URL}/blockchain/castBallot`, JSON.stringify({
+      voterId: this.id,
+      electionId: "1234", // HACER REQUEST A queryWithQueryString
+    }),
     {
       headers:{
         'Content-Type': 'application/json',
       }
     })
     .subscribe(
-      res2 =>{
-        if (res2['error'] == undefined) {
-          // Voto almacenado
-          this.success = true;
-          this.modalTitle = "Votación Exitosa";
-          this.modelContent = "Su voto se ha registrado exitosamente!";
-          this.modalService.open(content);
+      async res => {
+        if (res['error'] == undefined) {
+           // Encriptar voto
+            const idAndNonce = await encrypter.getIdAndNonce();
+            const nonceId = idAndNonce['id'];
+            const nonce: Uint8Array = idAndNonce['nonce'] as Uint8Array;
+            const scrutinizerPublicKey: Uint8Array = await this.scrutinizer.requestPublicKey() as Uint8Array;
+            
+            let encryptedVote = encrypter.seal(candidate.option_id, nonce, scrutinizerPublicKey);
+
+            const req2 = this.http.post(`${API_URL}/vote/submitVote`, JSON.stringify({
+              nonceId: nonceId,
+              encryptedVote: Array.from(encryptedVote),
+              electionId: 1234,
+              clientPublicKey: Array.from(encrypter.publicKey)
+            }), 
+            {
+              headers:{
+                'Content-Type': 'application/json',
+              }
+            })
+            .subscribe(
+              res2 =>{
+                if (res2['error'] == undefined) {
+                  // Voto almacenado
+                  this.success = true;
+                  this.modalTitle = "Votación Exitosa";
+                  this.modelContent = "Su voto se ha registrado exitosamente!";
+                  this.modalService.open(content);
+                }
+                else {
+                  // No se pudo mandar el voto al jurado
+                  this.success = false;
+                  this.modalTitle = "Ups, ocurrió un error";
+                  this.modelContent = res2['error'];
+                  this.modalService.open(content);
+                }
+              }
+            );
+
         }
         else {
-          // No se pudo mandar el voto al jurado
+          // Voto invalido
           this.success = false;
           this.modalTitle = "Ups, ocurrió un error";
-          this.modelContent = res2['error'];
+          this.modelContent = res['error'];
           this.modalService.open(content);
         }
       }
-    );
-
-    // const req = this.http.post(`${API_URL}/blockchain/castBallot`, JSON.stringify({
-    //   voterId: this.id,
-    //   electionId: "1234", // HACER REQUEST A queryWithQueryString
-    // }),
-    // {
-    //   headers:{
-    //     'Content-Type': 'application/json',
-    //   }
-    // })
-    // .subscribe(
-    //   res => {
-    //     if (res['error'] == undefined) {
-    //       // Encriptar voto
-    //       const idAndNonce = await encrypter.getIdAndNonce();
-    //       const nonceId = idAndNonce['id'];
-    //       const nonce = idAndNonce['nonce'];
-          
-    //       let encryptedVote = encrypter.seal(candidate.id, nonce, this.scrutinizerPublicKey);
-
-    //       const req2 = this.http.post(`${API_URL}/submitVote`, JSON.stringify({
-    //         nonceId: nonceId,
-    //         encryptedVote: encryptedVote,
-    //         electionId: "1234",
-    //         clientPublicKey: encrypter.publicKey
-    //       }), 
-    //       {
-    //         headers:{
-    //           'Content-Type': 'application/json',
-    //         }
-    //       })
-    //       .subscribe(
-    //         res2 =>{
-    //           if (res2['error'] == undefined) {
-    //             // Voto almacenado
-    //             this.success = true;
-    //             this.modalTitle = "Votación Exitosa";
-    //             this.modelContent = "Su voto se ha registrado exitosamente!";
-    //             this.modalService.open(content);
-    //           }
-    //           else {
-    //             // No se pudo mandar el voto al jurado
-    //             this.success = false;
-    //             this.modalTitle = "Ups, ocurrió un error";
-    //             this.modelContent = res2['error'];
-    //             this.modalService.open(content);
-    //           }
-    //         }
-    //       );
-
-    //     }
-    //     else {
-    //       // Voto invalido
-    //       this.success = false;
-    //       this.modalTitle = "Ups, ocurrió un error";
-    //       this.modelContent = res['error'];
-    //       this.modalService.open(content);
-    //     }
-    //   }
-    // )
+    )
   }
 }
